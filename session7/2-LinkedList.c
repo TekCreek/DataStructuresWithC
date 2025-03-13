@@ -14,8 +14,8 @@ struct Node {
 struct Node * add ( struct Node *, int );
 void display(struct Node *);
 struct Node * insert(struct Node *, int, int);
+struct Node * delete(struct Node *, int);
 
-void delete();
 void sort();
 void reverse();
 
@@ -53,8 +53,9 @@ int main() {
 
                 break;
             case DELETE:
-                delete();
-                printf("\nDelete operation");
+                printf("\n Enter value to delete : ");
+                scanf("%d", &value);
+                head = delete(head, value);
                 break;
             case SORT:
                 sort();
@@ -126,13 +127,92 @@ void display(struct Node * list) {
     printf("\n");
 }
 
+// Pos can be 0 
+// if list size = 5 values are present from 0 to 4 and valid positions are 0 to 5, beyond
+// that insert will fail.
 struct Node * insert(struct Node * list, int pos, int value) {
+    struct Node * n, * p;
+    int k;
+
+    if (pos < 0) {
+        printf(" \nPosition value can not be negative ");
+        return list;
+    }
+
+
+    if (list == NULL &&  pos != 0) {
+        printf("\n invalid position value ");
+        return list;
+    }
+
+    // it will change the head
+    if (pos == 0) {
+        n = allocateNode();
+        n->data = value;
+        n->next = list;
+        return n;   // refer the call   head = insert(head, pos, val)
+    }
+
+    // list => {10, 20, 30}  ϕ
+    //          p
+    // pos => 4
+    // value => 25
     
-    // TODO : insert the value at the given position, take first position as 0.
+    // k = 4
+
+    p = list;
+    k = 1;
+    while (k < pos && p != NULL) {
+        p = p->next;
+        k++;
+    }
+
+    if (p != NULL) {
+        n = allocateNode();
+        n->data = value;
+        n->next = p->next;
+        p->next = n;
+    } else {
+        printf("\n Invalid position value \n");
+    }
     
     return list;
 }
-void delete() {}
+
+
+struct Node * delete(struct Node *head, int value) {
+    
+    struct Node *p, *q;
+    
+    if (head == NULL) {
+        printf("List empty");
+        return head;
+    } 
+
+    p = head;
+    while (p != NULL && p->data != value) {
+        q = p;
+        p = p->next;
+    }
+
+    if (p == NULL) {
+        printf("%d value not found in the list", value);
+        return head;  // refer ... head = delete(head, value)
+    }
+
+    // value found
+
+    // case 1: if this is the first node 
+    if (p == head) {
+        head = head->next;
+        free(p);
+    } else { // case 2: middle node
+        q->next = p->next;
+        free(p);
+    }
+
+    return head; // new head in case of (1) or same head in case (2)
+}
 
 void sort() {}
 void reverse() {}
