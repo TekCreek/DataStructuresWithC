@@ -15,9 +15,9 @@ struct Node * add ( struct Node *, int );
 void display(struct Node *);
 struct Node * insert(struct Node *, int, int);
 struct Node * delete(struct Node *, int);
+struct Node * reverse(struct Node *);
+void sort(struct Node *);
 
-void sort();
-void reverse();
 
 int menu() {
     int choice;
@@ -58,11 +58,11 @@ int main() {
                 head = delete(head, value);
                 break;
             case SORT:
-                sort();
+                sort(head);
                 printf("\nSort operation");
                 break;
             case REVERSE:
-                reverse();
+                head = reverse(head);
                 printf("\nReverse operation");
                 break;
             case DISPLAY:
@@ -214,8 +214,86 @@ struct Node * delete(struct Node *head, int value) {
     return head; // new head in case of (1) or same head in case (2)
 }
 
-void sort() {}
-void reverse() {}
+struct Node * reverse(struct Node * head) {
+    struct Node *p, *q, *r;
+    
+    if (head == NULL) return NULL;
+
+    p = head;
+    r = NULL;
+    while (p != NULL) {
+        q = p;
+        p = p->next;
+        q->next = r;
+        r = q;
+    }
+
+    head = q;
+
+    return head; // return the new head.
+
+}
 
 
+// Efficiency ignored.
+void sort(struct Node *head) {
+    struct Node *p, *q;
+    int temp;
+    for (p = head; p != NULL; p = p->next) {
+        for (q = head; q != NULL; q = q->next ) {
+            if (q->next != NULL && q->data > q->next->data) {
+                temp = q->data;
+                q->data = q->next->data;
+                q->next->data = temp;   
+            }
+        }
+    }
+}
+
+
+
+/**
+Exercise - 1 - 
+
+    Sample call :- 
+        int arr[] = {10, 20, 30, 40};
+        head = addAll(head, arr, 4);
+
+    struct Node * addAll(struct Node * head, int arr[], int n) {
+
+    }
+
+
+Exercise - 2 - 
+
+    Sample call :- 
+        int arr[] = {10, 20};
+        head = removeAll(head, arr, 2);
+
+    struct Node * removeAll(struct Node * head, int arr[], int n) {
+
+    }
+
+
+Exercise - 3 -  (Take Exercise 1 sol as input)
+
+    Sample call :- 
+        int arr1[] = {10, 20, 30};
+        int arr2[] = {12, 2, 20, 30};
+        struct Node *h1 = NULL, * h2 = NULL;
+        h1 = addAll(h1, arr1, 3);                            // ....first linked list
+        h2 = addAll(h2, arr2, 4);                            // ....second list 
+        h3 = union(h1, h2); // expected outcome h3 with values 20 and 30
+
+    // returns a new list which is an union of h1 and h2.
+    struct Node * union(struct Node * h1, struct Node *h2) {
+
+    }
+
+
+    addAll => addition
+    intersection =>
+    union =>
+    set difference => C = A - B 
+*/
 
