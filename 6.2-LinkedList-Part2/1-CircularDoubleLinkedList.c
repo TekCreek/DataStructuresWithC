@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum Menu {ADD=1, INSERT, DELETE, SORT, REVERSE, DISPLAY, EXIT};
+enum Menu {ADD=1, INSERT, DELETE, DISPLAY, EXIT};
 
 
 struct Node {
@@ -16,13 +16,11 @@ struct Node * add ( struct Node *, int );
 void display(struct Node *);
 struct Node * insert(struct Node *, int, int);
 struct Node * delete(struct Node *, int);
-struct Node * reverse(struct Node *);
-void sort(struct Node *);
 
 
 int menu() {
     int choice;
-    printf("\n 1: Add \n 2: Insert \n 3: Delete \n 4: Sort \n 5: *Reverse \n 6: Display \n 7: Exit");
+    printf("\n 1: Add \n 2: Insert \n 3: Delete \n 4: Display \n 5: Exit");
     printf("\n Enter your choice : ");
     scanf("%d", &choice);
     return choice;
@@ -42,7 +40,6 @@ int main() {
                 scanf("%d", &value);
 
                 head = add(head, value);
-            
                 break;
             case INSERT:
                 printf("\n Enter position to insert ");
@@ -57,14 +54,6 @@ int main() {
                 printf("\n Enter value to delete : ");
                 scanf("%d", &value);
                 head = delete(head, value);
-                break;
-            case SORT:
-                sort(head);
-                printf("\nSort operation");
-                break;
-            case REVERSE:
-                head = reverse(head);
-                printf("\nReverse operation");
                 break;
             case DISPLAY:
                 display(head);
@@ -131,13 +120,14 @@ void display(struct Node * head) {
     struct Node * p;
 
     if (head == NULL) {
-        printf("\n List Empty ");
+        printf("\n [head: %p] ", head);
         return ;
     }
     
+    printf("\n [head: %p]", head);
     p = head;
     do {
-        printf("  %d  ", p->data);
+        printf(" -> (addr: %p,  prev: %p, data: %d, next: %p) ",p, p->prev, p->data, p->next);
         p = p->next;
     } while ( p != head );
 
@@ -229,34 +219,49 @@ struct Node * insert(struct Node * head, int pos, int value) {
 
 struct Node * delete(struct Node *head, int value) {
     
-    struct Node *p, *q;
-    
+    struct Node *p;
+    int found;
     if (head == NULL) {
         printf("List empty");
         return head;
     } 
 
     p = head;
-    while (p != NULL && p->data != value) {
-        q = p;
+    found = 0;
+    do {
+        if (p->data == value) {
+            found = 1;
+            break;
+        }
         p = p->next;
-    }
+    } while (p != head);
 
-    if (p == NULL) {
+
+    if (found == 0) {
         printf("%d value not found in the list", value);
         return head;  // refer ... head = delete(head, value)
     }
-
+    
     // value found
 
     // case 1: if this is the first node 
     if (p == head) {
-        head = head->next;
-        free(p);
+        // case 1.a: single node case 
+        if (p->prev == p->next) {
+            head = NULL;
+            free(p);
+        } else { // case 1.b: multi node 
+            p->prev->next = p->next;
+            p->next->prev = p->prev;
+            head = p->next; // point head to the second node
+            free(p);      
+        }
+        
     } else { // case 2: middle node
-        q->next = p->next;
+        p->prev->next = p->next;
+        p->next->prev = p->prev;
         free(p);
     }
 
-    return head; // new head in case of (1) or same head in case (2)
+    return head; 
 }
